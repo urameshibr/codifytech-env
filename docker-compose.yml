@@ -2,8 +2,6 @@ version: '3'
 services:
     codifytech-api:
         container_name: codifytech-api
-        env_file:
-            - codifytech-api/.env
         build:
             context: ./codifytech-api/vendor/laravel/sail/runtimes/8.2
             dockerfile: Dockerfile
@@ -30,8 +28,6 @@ services:
             - mailpit
     mysql:
         container_name: codifytech-mysql
-        env_file:
-            - codifytech-api/.env
         image: 'mysql/mysql-server:8.0'
         ports:
             - '${FORWARD_DB_PORT:-3306}:3306'
@@ -43,10 +39,10 @@ services:
             MYSQL_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
-            - 'sail-mysql:/var/lib/mysql'
+            - 'codifytech-mysql:/var/lib/mysql'
             - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
-            - codifytech-mysql
+            - codifytech-network
         healthcheck:
             test:
                 - CMD
@@ -57,8 +53,6 @@ services:
             timeout: 5s
     mailpit:
         container_name: codifytech-mailpit
-        env_file:
-            - codifytech-api/.env
         image: 'axllent/mailpit:latest'
         ports:
             - '${FORWARD_MAILPIT_PORT:-1025}:1025'
@@ -66,13 +60,16 @@ services:
         networks:
             - codifytech-network
     codifytech-web:
+        container_name: codifytech-web
         build:
-            context: ./codifytech-web/
+            context: ./codifytech-web
             dockerfile: Dockerfile
         volumes:
             - './codifytech-web:/var/www/html'
         ports:
             - "8080:8080"
+        networks:
+            - codifytech-network
 networks:
     codifytech-network:
         driver: bridge
