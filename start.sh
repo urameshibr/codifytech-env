@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define as URLs dos repositórios
-api_repository="https://github.com/urameshibr/codifytech-api.git"
-web_repository="https://github.com/urameshibr/codifytech-web.git"
+api_repository="git@github.com:urameshibr/codifytech-api.git"
+web_repository="git@github.com:urameshibr/codifytech-web.git"
 
 # Clone os repositórios na pasta atual
 git clone $api_repository
