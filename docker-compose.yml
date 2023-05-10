@@ -1,6 +1,6 @@
 version: '3'
 services:
-    codifytech-api:
+    api:
         container_name: codifytech-api
         build:
             context: ./codifytech-api/vendor/laravel/sail/runtimes/8.2
@@ -26,6 +26,8 @@ services:
         depends_on:
             - mysql
             - mailpit
+        links:
+            - mysql
     mysql:
         container_name: codifytech-mysql
         image: 'mysql/mysql-server:8.0'
@@ -40,7 +42,7 @@ services:
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
             - 'codifytech-mysql:/var/lib/mysql'
-            - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+            - './codifytech-api/vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
             - codifytech-network
         healthcheck:
@@ -59,7 +61,7 @@ services:
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
         networks:
             - codifytech-network
-    codifytech-web:
+    web:
         container_name: codifytech-web
         build:
             context: ./codifytech-web
